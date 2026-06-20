@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { usePathname } from "next/navigation";
 
 const navLinks = [
   { label: "Work", href: "/#work" },
@@ -12,12 +13,27 @@ const navLinks = [
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const pathname = usePathname();
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 40);
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    if (href.startsWith("/#") && pathname === "/") {
+      e.preventDefault();
+      const targetId = href.replace("/#", "");
+      const elem = document.getElementById(targetId);
+      if (elem) {
+        elem.scrollIntoView({ behavior: "smooth" });
+      }
+      setMenuOpen(false);
+    } else {
+      setMenuOpen(false);
+    }
+  };
 
   return (
     <motion.header
@@ -57,6 +73,7 @@ export default function Navbar() {
             >
               <a
                 href={link.href}
+                onClick={(e) => handleNavClick(e, link.href)}
                 className="text-sm text-slate-400 hover:text-white transition-colors duration-300 tracking-wide"
               >
                 {link.label}
@@ -70,6 +87,7 @@ export default function Navbar() {
           >
             <a
               href="/#contact"
+              onClick={(e) => handleNavClick(e, "/#contact")}
               id="nav-hire-btn"
               className="px-5 py-2 text-sm font-medium rounded-full bg-indigo-500 hover:bg-indigo-400 text-white transition-all duration-300 hover:shadow-lg hover:shadow-indigo-500/25"
             >
@@ -118,7 +136,7 @@ export default function Navbar() {
                 <li key={link.href}>
                   <a
                     href={link.href}
-                    onClick={() => setMenuOpen(false)}
+                    onClick={(e) => handleNavClick(e, link.href)}
                     className="text-slate-300 hover:text-white transition-colors"
                   >
                     {link.label}
@@ -128,7 +146,7 @@ export default function Navbar() {
               <li>
                 <a
                   href="/#contact"
-                  onClick={() => setMenuOpen(false)}
+                  onClick={(e) => handleNavClick(e, "/#contact")}
                   className="inline-block px-5 py-2 text-sm font-medium rounded-full bg-indigo-500 hover:bg-indigo-400 text-white transition-colors"
                 >
                   Hire Me
