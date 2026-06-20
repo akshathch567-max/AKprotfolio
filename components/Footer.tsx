@@ -64,10 +64,18 @@ export default function Footer() {
     setErrorMsg("");
 
     try {
-      const res = await fetch("/api/contact", {
+      const res = await fetch("https://api.web3forms.com/submit", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, message }),
+        headers: { 
+          "Content-Type": "application/json",
+          Accept: "application/json"
+        },
+        body: JSON.stringify({ 
+          access_key: "e2921dcc-7188-415a-9353-cc0c845ca17e",
+          name,
+          email,
+          message 
+        }),
       });
 
       const data = await res.json();
@@ -79,7 +87,7 @@ export default function Footer() {
         setMessage("");
       } else {
         setFormState("error");
-        setErrorMsg(data.error || "Something went wrong.");
+        setErrorMsg(data.message || "Something went wrong.");
       }
     } catch {
       setFormState("error");
