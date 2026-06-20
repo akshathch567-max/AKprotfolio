@@ -4,9 +4,9 @@ import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const navLinks = [
-  { label: "Work", href: "#work" },
-  { label: "About", href: "#about" },
-  { label: "Contact", href: "#contact" },
+  { label: "Work", href: "/#work" },
+  { label: "About", href: "/#about" },
+  { label: "Contact", href: "/#contact" },
 ];
 
 export default function Navbar() {
@@ -69,7 +69,7 @@ export default function Navbar() {
             transition={{ delay: 0.6 }}
           >
             <a
-              href="#contact"
+              href="/#contact"
               id="nav-hire-btn"
               className="px-5 py-2 text-sm font-medium rounded-full bg-indigo-500 hover:bg-indigo-400 text-white transition-all duration-300 hover:shadow-lg hover:shadow-indigo-500/25"
             >
@@ -127,7 +127,7 @@ export default function Navbar() {
               ))}
               <li>
                 <a
-                  href="#contact"
+                  href="/#contact"
                   onClick={() => setMenuOpen(false)}
                   className="inline-block px-5 py-2 text-sm font-medium rounded-full bg-indigo-500 hover:bg-indigo-400 text-white transition-colors"
                 >
