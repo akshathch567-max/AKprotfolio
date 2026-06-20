@@ -210,7 +210,7 @@ function StellarChart() {
 // ─────────────────────────────────────────────────────────────────────────────
 function AuraChart() {
   const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct"];
-  const revenues = [42, 58, 51, 73, 65, 88, 79, 95, 83, 110];
+  const [revenues, setRevenues] = useState([42, 58, 51, 73, 65, 88, 79, 95, 83, 110]);
   const [animated, setAnimated] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -223,6 +223,17 @@ function AuraChart() {
     return () => obs.disconnect();
   }, []);
 
+  useEffect(() => {
+    const id = setInterval(() => {
+      setRevenues((prev) => {
+        const last = prev[prev.length - 1];
+        const next = Math.max(40, Math.min(130, Math.round(last + (Math.random() - 0.5) * 15)));
+        return [...prev.slice(1), next];
+      });
+    }, 2000);
+    return () => clearInterval(id);
+  }, []);
+
   const maxRev = Math.max(...revenues);
 
   return (
@@ -230,9 +241,12 @@ function AuraChart() {
       <div className="flex items-center justify-between mb-4">
         <div>
           <h4 className="text-sm font-bold text-white uppercase tracking-wider">Monthly Revenue Performance</h4>
-          <p className="text-xs text-slate-500">Store gross revenue \u00b7 thousands USD \u00b7 2024</p>
+          <p className="text-xs text-slate-500">Store gross revenue &middot; thousands USD &middot; 2024</p>
         </div>
-        <span className="text-xs font-bold text-emerald-400 bg-emerald-400/10 px-2.5 py-1 rounded-full border border-emerald-400/20">\u2191 162% YoY</span>
+        <div className="flex items-center gap-2">
+          <span className="w-2.5 h-2.5 bg-emerald-400 rounded-full animate-ping" />
+          <span className="text-xs font-semibold text-emerald-400">LIVE</span>
+        </div>
       </div>
 
       <div className="flex items-end gap-2 h-[160px] mt-2">
@@ -263,7 +277,7 @@ function AuraChart() {
       </div>
 
       <div className="grid grid-cols-3 gap-4 mt-4 border-t border-slate-800/60 pt-4 text-center">
-        <div><span className="text-[10px] text-slate-500 uppercase tracking-widest block mb-1">Peak Month</span><span className="text-base font-bold text-emerald-400">$110k</span></div>
+        <div><span className="text-[10px] text-slate-500 uppercase tracking-widest block mb-1">Peak Month</span><span className="text-base font-bold text-emerald-400">${maxRev}k</span></div>
         <div><span className="text-[10px] text-slate-500 uppercase tracking-widest block mb-1">Avg Order</span><span className="text-base font-bold text-white">$284</span></div>
         <div><span className="text-[10px] text-slate-500 uppercase tracking-widest block mb-1">Conversion</span><span className="text-base font-bold text-violet-400">4.7%</span></div>
       </div>
@@ -275,13 +289,14 @@ function AuraChart() {
 // CHART 3  Mosaic Architecture — Core Web Vitals Progress Bars
 // ─────────────────────────────────────────────────────────────────────────────
 function MosaicChart() {
-  const metrics = [
+  const [metrics, setMetrics] = useState([
     { label: "LCP",  val: 1.2,  max: 4,    color: "#34d399", unit: "s" },
     { label: "FID",  val: 8,    max: 100,  color: "#818cf8", unit: "ms" },
     { label: "CLS",  val: 0.04, max: 0.25, color: "#f59e0b", unit: "" },
     { label: "FCP",  val: 0.9,  max: 3,    color: "#38bdf8", unit: "s" },
     { label: "TTFB", val: 180,  max: 600,  color: "#e879f9", unit: "ms" },
-  ];
+  ]);
+  const [lighthouseScore, setLighthouseScore] = useState(98);
   const [animated, setAnimated] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -294,6 +309,30 @@ function MosaicChart() {
     return () => obs.disconnect();
   }, []);
 
+  useEffect(() => {
+    const id = setInterval(() => {
+      setMetrics((prev) =>
+        prev.map((m) => {
+          let nextVal = m.val;
+          if (m.label === "LCP") {
+            nextVal = Math.max(0.8, Math.min(3.0, Number((m.val + (Math.random() - 0.5) * 0.15).toFixed(2))));
+          } else if (m.label === "FID") {
+            nextVal = Math.max(2, Math.min(30, Math.round(m.val + (Math.random() - 0.5) * 3)));
+          } else if (m.label === "CLS") {
+            nextVal = Math.max(0.01, Math.min(0.12, Number((m.val + (Math.random() - 0.5) * 0.008).toFixed(3))));
+          } else if (m.label === "FCP") {
+            nextVal = Math.max(0.5, Math.min(2.0, Number((m.val + (Math.random() - 0.5) * 0.08).toFixed(2))));
+          } else if (m.label === "TTFB") {
+            nextVal = Math.max(120, Math.min(260, Math.round(m.val + (Math.random() - 0.5) * 15)));
+          }
+          return { ...m, val: nextVal };
+        })
+      );
+      setLighthouseScore((prev) => Math.max(96, Math.min(100, Math.round(prev + (Math.random() - 0.5) * 2))));
+    }, 2000);
+    return () => clearInterval(id);
+  }, []);
+
   return (
     <div ref={ref} className="w-full bg-slate-900/40 border border-slate-800/80 rounded-xl p-6 backdrop-blur-sm">
       <div className="flex items-center justify-between mb-6">
@@ -301,7 +340,10 @@ function MosaicChart() {
           <h4 className="text-sm font-bold text-white uppercase tracking-wider">Core Web Vitals Score</h4>
           <p className="text-xs text-slate-500">Performance metrics for cinematic scroll site</p>
         </div>
-        <span className="text-xs font-bold text-emerald-400 bg-emerald-400/10 px-2.5 py-1 rounded-full border border-emerald-400/20">Score 98/100</span>
+        <div className="flex items-center gap-2">
+          <span className="w-2.5 h-2.5 bg-amber-400 rounded-full animate-ping" />
+          <span className="text-xs font-semibold text-amber-400">LIVE VITALS</span>
+        </div>
       </div>
 
       <div className="flex flex-col gap-5">
@@ -327,7 +369,7 @@ function MosaicChart() {
       <div className="grid grid-cols-3 gap-4 mt-6 border-t border-slate-800/60 pt-4 text-center">
         <div><span className="text-[10px] text-slate-500 uppercase tracking-widest block mb-1">Page Load</span><span className="text-base font-bold text-emerald-400">0.9s</span></div>
         <div><span className="text-[10px] text-slate-500 uppercase tracking-widest block mb-1">Bundle Size</span><span className="text-base font-bold text-white">48kb</span></div>
-        <div><span className="text-[10px] text-slate-500 uppercase tracking-widest block mb-1">Lighthouse</span><span className="text-base font-bold text-amber-400">98/100</span></div>
+        <div><span className="text-[10px] text-slate-500 uppercase tracking-widest block mb-1">Lighthouse</span><span className="text-base font-bold text-amber-400">{lighthouseScore}/100</span></div>
       </div>
     </div>
   );
